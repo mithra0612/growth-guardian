@@ -86,7 +86,6 @@ function App() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-50 flex items-center justify-center p-6 font-sans">
-      <div className="max-w-3xl w-full bg-white rounded-xl shadow-lg p-8 border border-blue-100">
         <div className="text-center mb-8">
           <h1 className="text-3xl font-bold text-indigo-800 mb-2">
             Financial Analyzer
@@ -351,7 +350,6 @@ function App() {
           </div>
         )}
       </div>
-    </div>
   );
 }
 

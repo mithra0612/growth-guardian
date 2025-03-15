@@ -1,7 +1,7 @@
 import React from 'react'
 import RetirementPlanner from './CalculationTools/RetirementPlanner'
 import InvestmentVsDebtRepayment from './CalculationTools/InvestmentVsDebtRepayment'
-import BudgetPlanner from './CalculationTools/BudgetPlanner'
+import BudgetPlanner from './CalculationTools/BudgetPlanner';
 function App() {
   return (
     <div>
