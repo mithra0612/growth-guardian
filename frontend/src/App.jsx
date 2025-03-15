@@ -13,6 +13,9 @@ import Scamarticle from "./ScamPreventionBot/scampreventionarticle";
 import Retirement from "./CalculationTools/RetirementPlanner";
 import Stock from "./StocksAnalysis/Stockanalysis";
 import StockingBot from "./StockBot/stockbot";
+import Learning from "./LearningModules/LearningModules";
+import Stockchart from "./StocksAnalysis/stockchart";
+
 const NavItem = ({ to, children }) => {
   const location = useLocation();
   const isActive = location.pathname === to;
@@ -101,7 +104,7 @@ function App() {
                   <span className="text-blue-700 font-bold text-lg">A</span>
                 </div>
                 <h1 className="text-xl font-bold text-white ml-3">
-                  Financial Management
+                  Growth Guardian
                 </h1>
               </div>
               <button
@@ -128,6 +131,23 @@ function App() {
             {/* Navigation */}
             <nav className="px-4 py-6">
               <ul>
+                <NavItem to="/investmentsimulator">
+                  <svg
+                    className="w-5 h-5 mr-3"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M13 10V3L4 14h7v7l9-11h-7z"
+                    />
+                  </svg>
+                  Investment Simulator
+                </NavItem>
                 {/* Tools Section */}
                 <NavSection
                   title="Tools"
@@ -287,6 +307,7 @@ function App() {
             <Routes>
               {/* Tool routes */}
               <Route path="/budgetplanner" element={<BudgetPlanner />} />
+              <Route path="/investmentsimulator" element={<Learning />} />
               <Route path="/invvsdebt" element={<Investment />} />
               <Route path="/retirementplanner" element={<Retirement />} />
 
@@ -299,7 +320,18 @@ function App() {
               <Route path="/stockingbots" element={<StockingBot />} />
 
               {/* Settings route */}
-              <Route path="/stocks" element={<Stock symbolFunc={()=>{SetStock(value)}} />} />
+              <Route
+                path="/stocks"
+                element={
+                  <Stock/>
+                }
+              />
+              <Route
+                path="/stockschart"
+                element={
+                  <Stockchart/>
+                }
+              />
             </Routes>
           </main>
         </div>

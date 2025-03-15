@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { X } from "lucide-react";
-
+import { useNavigate } from "react-router-dom";
 const StockTradingInterface = ({ handleChartsStock }) => {
+  const navigate = useNavigate();
   // Sample data
   const stocks = [
     {
@@ -327,7 +328,12 @@ const StockTradingInterface = ({ handleChartsStock }) => {
                         <span className="text-gray-600">Total Value:</span>
                         <span className="font-semibold">${totalValue}</span>
                       </div>
-                      <button className="w-full bg-blue-600 text-white py-3 rounded-md hover:bg-blue-700 transition mt-4">
+                      <button
+                        className="w-full bg-blue-600 text-white py-3 rounded-md hover:bg-blue-700 transition mt-4"
+                        onClick={() => {
+                          navigate("/stockschart");
+                        }}
+                      >
                         View Charts
                       </button>
                     </div>
