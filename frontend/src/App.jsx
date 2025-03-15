@@ -1,7 +1,13 @@
-export default function App() {
+import React from 'react'
+import RetirementPlanner from './CalculationTools/RetirementPlanner'
+import InvestmentVsDebtRepayment from './CalculationTools/InvestmentVsDebtRepayment'
+function App() {
   return (
-    <div className="flex items-center justify-center min-h-screen bg-blue-500 text-white text-2xl">
-      Tailwind CSS is working!
+    <div>
+      {/* <RetirementPlanner /> */}
+      <InvestmentVsDebtRepayment/>
     </div>
-  );
+  )
 }
+
+export default App
