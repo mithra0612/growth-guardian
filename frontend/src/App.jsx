@@ -11,12 +11,14 @@ import BudgetPlanner from "./CalculationTools/BudgetPlanner";
 import Scamprevent from "./ScamPreventionBot/scamprevention";
 import Scamarticle from "./ScamPreventionBot/scampreventionarticle";
 import Retirement from "./CalculationTools/RetirementPlanner";
-
-// NavItem component for regular links
+import Stock from "./StocksAnalysis/Stockanalysis";
+import StockingBot from "./StockBot/stockbot";
 const NavItem = ({ to, children }) => {
   const location = useLocation();
   const isActive = location.pathname === to;
 
+  const [stock, SetStock] = useState("TATASTEEL");
+  console.log(stock);
   return (
     <li className="mb-1">
       <Link
@@ -99,7 +101,7 @@ function App() {
                   <span className="text-blue-700 font-bold text-lg">A</span>
                 </div>
                 <h1 className="text-xl font-bold text-white ml-3">
-                  FinanceBuddy
+                  Financial Management
                 </h1>
               </div>
               <button
@@ -175,8 +177,8 @@ function App() {
                   <NavItem to="/scamarticle">Scam Prevention Article</NavItem>
                 </NavSection>
 
-                {/* Settings */}
-                <NavItem to="/settings">
+                {/* Stocks Section */}
+                <NavItem to="/stocks">
                   <svg
                     className="w-5 h-5 mr-3"
                     fill="none"
@@ -188,16 +190,29 @@ function App() {
                       strokeLinecap="round"
                       strokeLinejoin="round"
                       strokeWidth={2}
-                      d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"
+                      d="M3 10h2l1 2h13l1-2h2m-2 0l-1 2m-1 2h-2l-1 2H8l-1-2H5l-1 2H3m0 0l1-2m1-2h2l1-2h8l1 2h2l1-2h2m-2 0l-1 2m-1 2h-2l-1 2H8l-1-2H5l-1 2H3m0 0l1-2"
                     />
+                  </svg>
+                  Stocks
+                </NavItem>
+
+                {/* StockBot Section */}
+                <NavItem to="/stockingbots">
+                  <svg
+                    className="w-5 h-5 mr-3"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
                     <path
                       strokeLinecap="round"
                       strokeLinejoin="round"
                       strokeWidth={2}
-                      d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+                      d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
                     />
                   </svg>
-                  Settings
+                  StockBot
                 </NavItem>
               </ul>
             </nav>
@@ -281,9 +296,10 @@ function App() {
 
               {/* Default route */}
               <Route path="/" element={<BudgetPlanner />} />
+              <Route path="/stockingbots" element={<StockingBot />} />
 
               {/* Settings route */}
-              <Route path="/settings" element={<div>Settings Page</div>} />
+              <Route path="/stocks" element={<Stock symbolFunc={()=>{SetStock(value)}} />} />
             </Routes>
           </main>
         </div>
