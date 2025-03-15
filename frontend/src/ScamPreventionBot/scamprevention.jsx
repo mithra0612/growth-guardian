@@ -1,7 +1,8 @@
 // App.jsx
 import React, { useState, useRef } from "react";
 import { Send, Paperclip, Trash, Loader2 } from "lucide-react";
-// import axios from "axios"; // Removed axios import
+import axios from "axios"; // Added axios import
+import { motion } from "framer-motion"; // Added framer-motion import
 
 export default function ScamPrevention() {
   const [userPrompt, setUserPrompt] = useState("");
@@ -55,15 +56,13 @@ export default function ScamPrevention() {
       // Log the request payload to console
       console.log("Request Payload:", payload);
 
-      // Store the JSON payload in local storage
-      localStorage.setItem("scamPreventionPayload", JSON.stringify(payload));
-
-      // Simulate API response for demo purposes
-      const apiResponse = {
-        data: {
-          response: "This is a simulated response.",
+      // Make API call
+      // In production, replace with your actual API endpoint
+      const apiResponse = await axios.post("/api/analyze", payload, {
+        headers: {
+          "Content-Type": "application/json",
         },
-      };
+      });
 
       // Console log the JSON response
       console.log("API Response Data:", apiResponse.data);
@@ -75,7 +74,7 @@ export default function ScamPrevention() {
         timestamp: new Date().toLocaleTimeString(),
       });
     } catch (error) {
-      console.error("Error processing request:", error);
+      console.error("Error sending request:", error);
 
       // Fallback response for demo purposes
       setResponse({
@@ -114,21 +113,29 @@ export default function ScamPrevention() {
       <header className="border-b border-blue-100 p-6">
         <div className="max-w-3xl mx-auto flex justify-between items-center">
           <div className="flex items-center">
-            <div className="h-10 w-10 rounded-full bg-blue-600 flex items-center justify-center mr-3">
+            <motion.div
+              className="h-10 w-10 rounded-full bg-blue-600 flex items-center justify-center mr-3"
+              initial={{ scale: 0 }}
+              animate={{ scale: 1 }}
+              transition={{ duration: 0.5 }}
+            >
               <span className="text-xl font-bold text-white">AI</span>
-            </div>
+            </motion.div>
             <h1 className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-blue-800 bg-clip-text text-transparent">
               Intelligence Assistant
             </h1>
           </div>
 
           {hasSubmitted && (
-            <button
+            <motion.button
               onClick={resetChat}
-              className="px-4 py-2 text-sm bg-blue-100 hover:bg-blue-200 text-blue-700 rounded-full transition-colors"
+              className="px-4 py-2 text-sm bg-blue-100 hover:bg-blue-200 text-blue-700 rounded-full transition-colors cursor-pointer"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.5 }}
             >
               New Question
-            </button>
+            </motion.button>
           )}
         </div>
       </header>
@@ -136,7 +143,12 @@ export default function ScamPrevention() {
       <div className="flex-1 overflow-hidden flex flex-col">
         <div className="max-w-3xl w-full mx-auto flex-1 flex flex-col p-6">
           {!hasSubmitted && (
-            <div className="flex-1 flex flex-col items-center justify-center text-center px-4 mb-10">
+            <motion.div
+              className="flex-1 flex flex-col items-center justify-center text-center px-4 mb-10"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.5 }}
+            >
               <div className="h-24 w-24 rounded-full bg-gradient-to-r from-blue-500 to-blue-600 flex items-center justify-center mb-6">
                 <span className="text-4xl text-white">✨</span>
               </div>
@@ -147,11 +159,16 @@ export default function ScamPrevention() {
                 Ask me anything or upload documents for analysis. I'll provide a
                 concise, informative response.
               </p>
-            </div>
+            </motion.div>
           )}
 
           {hasSubmitted && (
-            <div className="flex-1 overflow-y-auto mb-6">
+            <motion.div
+              className="flex-1 overflow-y-auto mb-6"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.5 }}
+            >
               {/* User query recap */}
               <div className="mb-6 p-4 bg-blue-50 rounded-lg border border-blue-100">
                 <div className="text-sm text-blue-500 mb-1">Your query:</div>
@@ -185,7 +202,12 @@ export default function ScamPrevention() {
 
               {/* Response content */}
               {response && (
-                <div className="bg-gradient-to-r from-blue-100 to-blue-50 rounded-xl p-6 border border-blue-200">
+                <motion.div
+                  className="bg-gradient-to-r from-blue-100 to-blue-50 rounded-xl p-6 border border-blue-200"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ duration: 0.5 }}
+                >
                   <div className="flex items-center mb-4">
                     <div className="h-8 w-8 rounded-full bg-blue-600 flex items-center justify-center mr-3">
                       <span className="text-sm font-bold text-white">AI</span>
@@ -204,14 +226,19 @@ export default function ScamPrevention() {
                       response
                     </p>
                   </div>
-                </div>
+                </motion.div>
               )}
-            </div>
+            </motion.div>
           )}
 
           {/* Input area - shown only if not submitted or if reset */}
           {!hasSubmitted && (
-            <div className="bg-white rounded-xl p-4 border border-blue-100 shadow-lg">
+            <motion.div
+              className="bg-white rounded-xl p-4 border border-blue-100 shadow-lg"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.5 }}
+            >
               {/* File preview area */}
               {files.length > 0 && (
                 <div className="mb-4 flex flex-wrap gap-2">
@@ -246,7 +273,7 @@ export default function ScamPrevention() {
                   />
                   <button
                     type="button"
-                    className="absolute right-3 bottom-3 text-blue-400 hover:text-blue-600 transition-colors"
+                    className="absolute right-3 bottom-3 text-blue-400 hover:text-blue-600 transition-colors cursor-pointer"
                     onClick={triggerFileInput}
                   >
                     <Paperclip size={20} />
@@ -267,7 +294,7 @@ export default function ScamPrevention() {
                   <Send size={20} />
                 </button>
               </form>
-            </div>
+            </motion.div>
           )}
         </div>
       </div>

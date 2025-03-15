@@ -1,9 +1,10 @@
 import ScamPrevention from "./ScamPreventionBot/scamprevention";
-
+import ScamArticle  from "./ScamPreventionBot/scampreventionarticle";
 export default function App() {
   return (
     <div>
-      <ScamPrevention />
+      {/* <ScamPrevention /> */}
+      <ScamArticle />
     </div>
   );
 }
