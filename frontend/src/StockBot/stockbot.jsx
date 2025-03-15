@@ -42,7 +42,7 @@ export default function ScamPrevention() {
         );
 
         response = await axios.post(
-          "http://localhost:8000/api/scamDetectorText",
+          "http://localhost:8000/api/fundAnalyzer",
           payload_text,
           { headers: { "Content-Type": "application/json" } }
         );
