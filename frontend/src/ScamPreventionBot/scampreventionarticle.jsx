@@ -78,10 +78,10 @@ export default function ScamEducationBlog() {
               }
               className={`${
                 fontSize === "normal"
-                  ? "text-lg cursor-pointer"
+                  ? "text-lg"
                   : fontSize === "large"
-                  ? "text-xl cursor-pointer"
-                  : "text-2xl cursor-pointer"
+                  ? "text-xl"
+                  : "text-2xl"
               } px-8 py-3 bg-yellow-400 text-blue-800 font-bold rounded-full hover:bg-yellow-300 transition shadow-md`}
             >
               Get Help Now
@@ -566,7 +566,7 @@ export default function ScamEducationBlog() {
                     {resource.phone}
                   </p>
                   {resource.website && (
-                    <p className="font-bold text-blue-600 break-words cursor-pointer">
+                    <p className="font-bold text-blue-600 break-words">
                       <span className="inline-block w-6 text-center mr-2">
                         🌐
                       </span>
