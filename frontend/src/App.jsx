@@ -1,10 +1,13 @@
-import ScamPrevention from "./ScamPreventionBot/scamprevention";
-import ScamArticle  from "./ScamPreventionBot/scampreventionarticle";
-export default function App() {
+import React from 'react'
+import RetirementPlanner from './CalculationTools/RetirementPlanner'
+import InvestmentVsDebtRepayment from './CalculationTools/InvestmentVsDebtRepayment'
+function App() {
   return (
     <div>
-      {/* <ScamPrevention /> */}
-      <ScamArticle />
+      {/* <RetirementPlanner /> */}
+      <InvestmentVsDebtRepayment/>
     </div>
-  );
+  )
 }
+
+export default App
