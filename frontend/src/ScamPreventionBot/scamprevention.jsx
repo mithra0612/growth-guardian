@@ -42,7 +42,7 @@ export default function ScamPrevention() {
         );
 
         response = await axios.post(
-          "http://localhost:8000/api/scamDetectorText",
+          "https://hackit-fin-tech-backend.vercel.app/api/scamDetectorText",
           payload_text,
           { headers: { "Content-Type": "application/json" } }
         );
@@ -74,7 +74,6 @@ export default function ScamPrevention() {
 
       // Format and process the response
       const formattedResponse = formatResponseData(response.data);
-
       setResponse({
         content: formattedResponse,
         jsonResponse: response.data,
