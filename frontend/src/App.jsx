@@ -11,7 +11,7 @@ import BudgetPlanner from "./CalculationTools/BudgetPlanner";
 import Scamprevent from "./ScamPreventionBot/scamprevention";
 import Scamarticle from "./ScamPreventionBot/scampreventionarticle";
 import Retirement from "./CalculationTools/RetirementPlanner";
-import Stock from "./StocksAnalysis/Stockanalysis";
+import Stock from './StocksAnalysis/stockanalysis';
 import StockingBot from "./StockBot/stockbot";
 import Learning from "./LearningModules/LearningModules";
 import Stockchart from "./StocksAnalysis/stockchart";
