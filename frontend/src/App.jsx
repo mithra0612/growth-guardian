@@ -13,7 +13,8 @@ import Scamarticle from "./ScamPreventionBot/scampreventionarticle";
 import Retirement from "./CalculationTools/RetirementPlanner";
 import Stock from './StocksAnalysis/stockanalysis';
 import StockingBot from "./StockBot/stockbot";
-import Learning from "./LearningModules/LearningModules";
+// import Learning from "./LearningModules/LearningModules";
+import Learning from "./LearningModules/LearningModulesNew";
 import Stockchart from "./StocksAnalysis/stockchart";
 
 const NavItem = ({ to, children }) => {
@@ -303,7 +304,7 @@ function App() {
             </div>
           </header>
 
-          <main className="flex-1 overflow-auto p-6 bg-gray-50">
+          <main className="flex-1 overflow-auto bg-gray-50">
             <Routes>
               {/* Tool routes */}
               <Route path="/budgetplanner" element={<BudgetPlanner />} />

@@ -67,7 +67,7 @@ function BudgetPlanner() {
     const remainingPercentage = remaining > 0 ? (remaining / budget) * 100 : 0;
   
     return (
-      <div className="min-h-screen bg-blue-50">
+      <div className="min-h-screen bg-blue-50 p-0">
         {/* Header remains the same */}
         <header className="bg-blue-700 text-white shadow-md">
           <div className="container mx-auto px-4 py-6">
