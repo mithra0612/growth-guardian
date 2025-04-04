@@ -71,8 +71,7 @@ function BudgetPlanner() {
         {/* Header remains the same */}
         <header className="bg-blue-700 text-white shadow-md">
           <div className="container mx-auto px-4 py-6">
-            <h1 className="text-3xl font-bold text-center">Personal Budget Planner</h1>
-            <p className="text-center text-blue-100 mt-2">Take control of your finances</p>
+            <h1 className="text-3xl font-bold text-center">Budget Planner</h1>
           </div>
         </header>
         

@@ -151,16 +151,11 @@ const StockTradingInterface = ({ handleChartsStock }) => {
       : "0.00";
 
   return (
-    <div className="flex flex-col h-screen bg-gray-50">
-      {/* Header */}
-      <div className="bg-white shadow-sm border-b">
-        <div className="max-w-7xl mx-auto px-4 py-4">
-          <h1 className="text-2xl font-semibold text-gray-800">
-            Investment Portfolio
-          </h1>
-        </div>
-      </div>
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-gray-100 py-8 px-4">
 
+<header className="text-center mb-10">
+          <h1 className="text-4xl font-semibold text-blue-900 mb-2">Investment Simulator</h1>
+        </header>
       {/* Main content */}
       <div className="flex-1 max-w-7xl mx-auto px-4 py-6 w-full">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">

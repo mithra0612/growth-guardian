@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   BrowserRouter as Router,
   Routes,
@@ -13,338 +13,300 @@ import Scamarticle from "./ScamPreventionBot/scampreventionarticle";
 import Retirement from "./CalculationTools/RetirementPlanner";
 import Stock from './StocksAnalysis/stockanalysis';
 import StockingBot from "./StockBot/stockbot";
-// import Learning from "./LearningModules/LearningModules";
 import Learning from "./LearningModules/LearningModulesNew";
 import Stockchart from "./StocksAnalysis/stockchart";
+import AssetReturnForecast from './AssetForecast/AssetReturnForecast';
+import FloatingChatbot from "./FloatingChatbot/Floating";
 
-const NavItem = ({ to, children }) => {
+import { 
+  Home, 
+  Calculator, 
+  DollarSign, 
+  Shield, 
+  BarChart2, 
+  Bot, 
+  ChevronDown,
+  Menu,
+  X,
+  TrendingUp,
+  PiggyBank,
+  Wallet,
+  Target,
+  Settings,
+  FileText,
+  Landmark,
+  Briefcase,
+  ChevronRight,
+  LogOut,
+  ChartArea,
+  Book
+} from "lucide-react";
+
+const App = () => {
+  const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [isMobile, setIsMobile] = useState(false);
+
+  // Handle screen size changes
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth < 1024);
+      if (window.innerWidth < 1024) setSidebarOpen(false);
+    };
+
+    handleResize(); // Initialize
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
+  return (
+    <Router>
+      <div className="flex h-screen">
+        {/* Solid Blue Sidebar */}
+        <aside 
+          className={`${
+            sidebarOpen ? 'w-64' : 'w-20'
+          } fixed h-full z-20 transition-all duration-300 ease-in-out bg-blue-900 shadow-lg`}
+        >
+          <SidebarContent sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />
+        </aside>
+        
+        {/* Overlay for mobile */}
+        {isMobile && sidebarOpen && (
+          <div 
+            className="fixed inset-0 bg-black/30 z-10 lg:hidden"
+            onClick={() => setSidebarOpen(false)}
+          />
+        )}
+
+        {/* Main Content Area */}
+        <main className={`flex-1 transition-all duration-300 ${sidebarOpen ? 'ml-64' : 'ml-20'}`}>
+          <Routes>
+            {/* Tool routes */}
+            <Route path="/budgetplanner" element={<BudgetPlanner />} />
+            <Route path="/learning-modules" element={<Learning />} />
+            <Route path="/invvsdebt" element={<Investment />} />
+            <Route path="/retirementplanner" element={<Retirement />} />
+
+            {/* Scam Prevention routes */}
+            <Route path="/scamprevention" element={<Scamprevent />} />
+            <Route path="/scamarticle" element={<Scamarticle />} />
+
+            {/* Default route */}
+            <Route path="/" element={<BudgetPlanner />} />
+            <Route path="/stockingbots" element={<StockingBot />} />
+
+            {/* Other routes */}
+            <Route path="/stocks" element={<Stock/>} />
+            <Route path="/stockschart" element={<Stockchart/>} />
+            <Route path="/forecast" element={<AssetReturnForecast/>   } />
+          </Routes>
+          <FloatingChatbot /> {/* Floating Chatbot Component */}
+        </main>
+      </div>
+    </Router>
+  );
+};
+
+// Sidebar Content Component
+const SidebarContent = ({ sidebarOpen, setSidebarOpen }) => {
+  return (
+    <div className="flex flex-col h-full text-white">
+      {/* Logo area */}
+      <div className={`flex items-center h-16 ${sidebarOpen ? 'px-6 justify-between' : 'justify-center'}`}>
+        {sidebarOpen ? (
+          <>
+            <div className="flex items-center">
+              <h1 className="ml-3 text-lg font-semibold text-white">GrowthGuardian</h1>
+            </div>
+            <button 
+              onClick={() => setSidebarOpen(!sidebarOpen)}
+              className="p-1.5 rounded-md hover:bg-blue-800 text-white"
+            >
+              <ChevronRight size={18} />
+            </button>
+          </>
+        ) : (
+          <>
+            <button 
+              onClick={() => setSidebarOpen(!sidebarOpen)}
+              className="p-1.5 rounded-md hover:bg-blue-800 text-white"
+            >
+              <Menu size={18} />
+            </button>
+          </>
+        )}
+      </div>
+
+      {/* Navigation with sections */}
+      <div className="flex-1 overflow-y-auto py-4 px-3">
+        <NavMenu sidebarOpen={sidebarOpen} />
+      </div>
+
+      {/* User profile section */}
+      {sidebarOpen && (
+        <div className="p-3 mt-2 border-t border-blue-700">
+          <div className="flex items-center">
+            <div className="h-8 w-8 rounded-full bg-white text-blue-900 flex items-center justify-center">
+              <span className="font-medium">JD</span>
+            </div>
+            <div className="ml-3">
+              <p className="text-sm font-medium text-white">John Doe</p>
+            </div>
+            <button className="ml-auto p-1.5 rounded-md hover:bg-blue-800 text-white">
+              <LogOut size={16} />
+            </button>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
+
+// Navigation menu with all items and sections
+const NavMenu = ({ sidebarOpen }) => {
+  return (
+    <div className="space-y-8"> {/* Reduced spacing between sections from 10 to 8 */}
+      {/* Main navigation */}
+      <NavSection 
+        title="Main" 
+        sidebarOpen={sidebarOpen}
+        items={[
+          { 
+            to: "/learning-modules", 
+            icon: <Book size={18} />, 
+            label: "Learning Modules" 
+          }
+        ]}
+      />
+      <NavSection 
+          title="Investments" 
+          sidebarOpen={sidebarOpen}
+          items={[
+            { 
+              to: "/stocks", 
+              icon: <BarChart2 size={18} />, 
+              label: "Investment Simulator" 
+            },
+            { 
+              to: "/forecast", 
+              icon: <ChartArea size={18} />, 
+              label: "Asset Return Forecast" 
+            }
+          ]}
+        />
+
+      {/* Finance tools */}
+      <NavSection 
+        title="Finance Tools" 
+        sidebarOpen={sidebarOpen}
+        items={[
+          { 
+            to: "/budgetplanner", 
+            icon: <Wallet size={18} />, 
+            label: "Budget Planner" 
+          },
+          { 
+            to: "/invvsdebt", 
+            icon: <DollarSign size={18} />, 
+            label: "Invest vs Debt" 
+          },
+          { 
+            to: "/retirementplanner", 
+            icon: <Target size={18} />, 
+            label: "Retirement Planning" 
+          }
+        ]}
+      />
+
+      {/* Security */}
+      <NavSection 
+        title="Security" 
+        sidebarOpen={sidebarOpen}
+        items={[
+          { 
+            to: "/scamprevention", 
+            icon: <Shield size={18} />, 
+            label: "Scam Prevention Bot" 
+          },
+          { 
+            to: "/scamarticle", 
+            icon: <FileText size={18} />, 
+            label: "Prevention Guide" 
+          }
+        ]}
+      />
+        
+
+      {/* Investments */}
+    </div>
+  );
+};
+
+// Navigation section component
+const NavSection = ({ title, items, sidebarOpen }) => {
+  return (
+    <div>
+      {sidebarOpen && (
+        <h3 className="text-xs font-medium uppercase text-blue-200 mb-3 px-3">
+          {title}
+        </h3>
+      )}
+      <ul className="space-y-1">
+        {items.map((item, index) => (
+          <NavItem
+            key={index}
+            to={item.to}
+            icon={item.icon}
+            label={item.label}
+            sidebarOpen={sidebarOpen}
+          />
+        ))}
+      </ul>
+    </div>
+  );
+};
+
+// Individual navigation item
+const NavItem = ({ to, icon, label, sidebarOpen }) => {
   const location = useLocation();
   const isActive = location.pathname === to;
 
-  const [stock, SetStock] = useState("TATASTEEL");
-  console.log(stock);
   return (
-    <li className="mb-1">
+    <li>
       <Link
         to={to}
-        className={`flex items-center px-4 py-3 rounded-lg transition-colors duration-200 ${
-          isActive
-            ? "bg-blue-600 text-white font-medium"
-            : "text-blue-100 hover:bg-blue-600/40"
+        className={`group flex items-center ${
+          sidebarOpen ? 'px-3' : 'justify-center'
+        } py-2 rounded-md transition-all ${
+          isActive 
+            ? 'bg-white/20 text-white font-medium' 
+            : 'text-blue-100 hover:bg-blue-800 hover:text-white'
         }`}
       >
-        {children}
+        <div className={`flex items-center justify-center ${
+          isActive ? 'text-white' : 'text-blue-100 group-hover:text-white'
+        }`}>
+          {icon}
+        </div>
+        
+        {sidebarOpen && (
+          <span className="ml-3 text-sm">{label}</span>
+        )}
+        
+        {/* Tooltip for collapsed state */}
+        {!sidebarOpen && (
+          <div className="absolute left-16 ml-1 p-2 min-w-max rounded-md shadow-md bg-gray-800 text-xs font-medium text-white opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity">
+            {label}
+          </div>
+        )}
       </Link>
     </li>
   );
 };
 
-// NavSection component for sections with submenus
-const NavSection = ({ title, children, icon }) => {
-  const [isOpen, setIsOpen] = useState(false);
-  const location = useLocation();
-
-  // Check if any child route is active
-  const childPaths = React.Children.map(children, (child) => child.props.to);
-  const isActive = childPaths.some((path) => location.pathname === path);
-
-  return (
-    <div className="mb-3">
-      <button
-        onClick={() => setIsOpen(!isOpen)}
-        className={`w-full flex items-center justify-between px-4 py-3 rounded-lg transition-colors duration-200 ${
-          isActive
-            ? "bg-blue-600/70 text-white font-medium"
-            : "text-blue-100 hover:bg-blue-600/40"
-        }`}
-      >
-        <div className="flex items-center">
-          {icon}
-          <span className="ml-3">{title}</span>
-        </div>
-        <svg
-          className={`w-4 h-4 transition-transform duration-200 ${
-            isOpen ? "transform rotate-180" : ""
-          }`}
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth={2}
-            d="M19 9l-7 7-7-7"
-          />
-        </svg>
-      </button>
-      {isOpen && <ul className="mt-1 pl-6">{children}</ul>}
-    </div>
-  );
-};
-
-// Main App component
-function App() {
-  const [sidebarOpen, setSidebarOpen] = useState(true);
-
-  const toggleSidebar = () => {
-    setSidebarOpen(!sidebarOpen);
-  };
-
-  return (
-    <Router>
-      <div className="flex h-screen bg-gray-50">
-        {/* Sidebar */}
-        {sidebarOpen && (
-          <div className="w-72 h-full bg-gradient-to-b from-blue-700 to-blue-900 shadow-xl">
-            {/* Sidebar Header */}
-            <div className="p-6 flex items-center justify-between">
-              <div className="flex items-center">
-                <div className="w-8 h-8 rounded-lg bg-white flex items-center justify-center">
-                  <span className="text-blue-700 font-bold text-lg">A</span>
-                </div>
-                <h1 className="text-xl font-bold text-white ml-3">
-                  Growth Guardian
-                </h1>
-              </div>
-              <button
-                onClick={toggleSidebar}
-                className="text-blue-200 hover:text-white transition-colors"
-              >
-                <svg
-                  className="w-6 h-6"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M15 19l-7-7 7-7"
-                  />
-                </svg>
-              </button>
-            </div>
-
-            {/* Navigation */}
-            <nav className="px-4 py-6">
-              <ul>
-                <NavItem to="/investmentsimulator">
-                  <svg
-                    className="w-5 h-5 mr-3"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M13 10V3L4 14h7v7l9-11h-7z"
-                    />
-                  </svg>
-                  Investment Simulator
-                </NavItem>
-                {/* Tools Section */}
-                <NavSection
-                  title="Tools"
-                  icon={
-                    <svg
-                      className="w-5 h-5"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                      xmlns="http://www.w3.org/2000/svg"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2zM9 9h6v6H9V9z"
-                      />
-                    </svg>
-                  }
-                >
-                  <NavItem to="/budgetplanner">Budget Planner</NavItem>
-                  <NavItem to="/invvsdebt">Invest vs Debt Repayment</NavItem>
-                  <NavItem to="/retirementplanner">Retirement Plan</NavItem>
-                </NavSection>
-
-                {/* Scam Prevention Section */}
-                <NavSection
-                  title="Scam Prevention"
-                  icon={
-                    <svg
-                      className="w-5 h-5"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                      xmlns="http://www.w3.org/2000/svg"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
-                      />
-                    </svg>
-                  }
-                >
-                  <NavItem to="/scamprevention">Scam Prevention Bot</NavItem>
-                  <NavItem to="/scamarticle">Scam Prevention Article</NavItem>
-                </NavSection>
-
-                {/* Stocks Section */}
-                <NavItem to="/stocks">
-                  <svg
-                    className="w-5 h-5 mr-3"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M3 10h2l1 2h13l1-2h2m-2 0l-1 2m-1 2h-2l-1 2H8l-1-2H5l-1 2H3m0 0l1-2m1-2h2l1-2h8l1 2h2l1-2h2m-2 0l-1 2m-1 2h-2l-1 2H8l-1-2H5l-1 2H3m0 0l1-2"
-                    />
-                  </svg>
-                  Stocks
-                </NavItem>
-
-                {/* StockBot Section */}
-                <NavItem to="/stockingbots">
-                  <svg
-                    className="w-5 h-5 mr-3"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                    />
-                  </svg>
-                  StockBot
-                </NavItem>
-              </ul>
-            </nav>
-          </div>
-        )}
-
-        {/* Main Content */}
-        <div className="flex-1 flex flex-col overflow-hidden">
-          {/* Header with navigation */}
-          <header className="bg-white shadow-sm px-6 py-4 flex items-center border-b border-gray-100">
-            {!sidebarOpen && (
-              <button
-                onClick={toggleSidebar}
-                className="mr-4 text-blue-600 hover:text-blue-800 transition-colors"
-              >
-                <svg
-                  className="w-6 h-6"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M4 6h16M4 12h16M4 18h16"
-                  />
-                </svg>
-              </button>
-            )}
-
-            <h1 className="text-xl font-bold text-blue-900">Dashboard</h1>
-
-            <div className="ml-auto flex items-center space-x-4">
-              <button className="text-gray-500 hover:text-blue-600 transition-colors">
-                <svg
-                  className="w-6 h-6"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"
-                  />
-                </svg>
-              </button>
-              <button className="text-gray-500 hover:text-blue-600 transition-colors">
-                <svg
-                  className="w-6 h-6"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-                  />
-                </svg>
-              </button>
-            </div>
-          </header>
-
-          <main className="flex-1 overflow-auto bg-gray-50">
-            <Routes>
-              {/* Tool routes */}
-              <Route path="/budgetplanner" element={<BudgetPlanner />} />
-              <Route path="/investmentsimulator" element={<Learning />} />
-              <Route path="/invvsdebt" element={<Investment />} />
-              <Route path="/retirementplanner" element={<Retirement />} />
-
-              {/* Scam Prevention routes */}
-              <Route path="/scamprevention" element={<Scamprevent />} />
-              <Route path="/scamarticle" element={<Scamarticle />} />
-
-              {/* Default route */}
-              <Route path="/" element={<BudgetPlanner />} />
-              <Route path="/stockingbots" element={<StockingBot />} />
-
-              {/* Settings route */}
-              <Route
-                path="/stocks"
-                element={
-                  <Stock/>
-                }
-              />
-              <Route
-                path="/stockschart"
-                element={
-                  <Stockchart/>
-                }
-              />
-            </Routes>
-          </main>
-        </div>
-      </div>
-    </Router>
-  );
-}
-
 export default App;
 
 // import React from 'react'
-// import AssetReturnForecast from "./AssetForecast/AssetReturnForecast";
 // function App() {
 //   return (
 //     <div>
@@ -352,5 +314,5 @@ export default App;
 //     </div>
 //   )
 // }
+// export default App;
 
-// export default App

@@ -1,471 +1,392 @@
-import React, { useState, useRef } from "react";
-import { Send, Paperclip, Trash, Loader2, X } from "lucide-react";
-import axios from "axios";
+import React, { useState, useEffect, useRef } from "react";
 
-export default function ScamPrevention() {
-  const [userPrompt, setUserPrompt] = useState("");
-  const [files, setFiles] = useState([]);
-  const [response, setResponse] = useState(null);
+const ChatBot = () => {
+  const [messages, setMessages] = useState([]);
+  const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const [hasSubmitted, setHasSubmitted] = useState(false);
-  const [showModal, setShowModal] = useState(false);
-  const fileInputRef = useRef(null);
+  const [currentResponse, setCurrentResponse] = useState("");
+  const [displayedText, setDisplayedText] = useState("");
+  const [charIndex, setCharIndex] = useState(0);
+  const [isThinking, setIsThinking] = useState(false);
 
-  // Function to convert files to base64 for API submission
-  const fileToBase64 = (file) => {
-    return new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.readAsDataURL(file);
-      reader.onload = () => resolve(reader.result.split(",")[1]);
-      reader.onerror = (error) => reject(error);
-    });
-  };
+  const chatContainerRef = useRef(null);
+  const inputRef = useRef(null);
+  const typingSpeed = 20; // milliseconds per character (faster than word-by-word)
+
+  // Character-by-character animation
+  useEffect(() => {
+    if (currentResponse && charIndex < currentResponse.length) {
+      const timer = setTimeout(() => {
+        setDisplayedText(currentResponse.substring(0, charIndex + 1));
+        setCharIndex(charIndex + 1);
+      }, typingSpeed);
+
+      return () => clearTimeout(timer);
+    } else if (currentResponse && charIndex === currentResponse.length) {
+      // Done typing, add to messages
+      setMessages((prev) => [
+        ...prev.slice(0, -1),
+        {
+          text: currentResponse,
+          isUser: false,
+          timestamp: new Date().toLocaleTimeString([], {
+            hour: "2-digit",
+            minute: "2-digit",
+          }),
+        },
+      ]);
+      setCurrentResponse("");
+      setCharIndex(0);
+    }
+  }, [currentResponse, charIndex]);
+
+  // Auto-scroll
+  useEffect(() => {
+    if (chatContainerRef.current) {
+      chatContainerRef.current.scrollTop =
+        chatContainerRef.current.scrollHeight;
+    }
+  }, [messages, displayedText]);
+
+  // Focus on input when loading stops
+  useEffect(() => {
+    if (!isLoading && inputRef.current) {
+      inputRef.current.focus();
+    }
+  }, [isLoading]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (userPrompt.trim() === "" && files.length === 0) return;
+    if (!input.trim()) return;
 
+    // Add user message with timestamp
+    const userMessage = {
+      text: input,
+      isUser: true,
+      timestamp: new Date().toLocaleTimeString([], {
+        hour: "2-digit",
+        minute: "2-digit",
+      }),
+    };
+    setMessages((prev) => [...prev, userMessage]);
+
+    // Clear input and start loading
+    setInput("");
     setIsLoading(true);
-    setHasSubmitted(true);
+
+    // Simulate "thinking" state before typing
+    setIsThinking(true);
 
     try {
-      let response;
+      // Simulate network delay (remove in production)
+      await new Promise((resolve) => setTimeout(resolve, 1000));
 
-      if (userPrompt.trim() !== "") {
-        // Text submission
-        const payload_text = { prompt: userPrompt };
+      const response = await fetch(
+        "https://hackit-fin-tech-backend.vercel.app/api/scamDetectorText",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ prompt: input }),
+        }
+      );
 
-        console.log("Text Request Payload:", payload_text);
-        localStorage.setItem(
-          "scamPreventionPayload",
-          JSON.stringify(payload_text)
-        );
-
-        response = await axios.post(
-          "https://hackit-fin-tech-backend.vercel.app/api/scamDetectorText",
-          payload_text,
-          { headers: { "Content-Type": "application/json" } }
-        );
-      } else if (files.length > 0) {
-        // File submission
-        const filePromises = files.map(async (file) => {
-          const base64Content = await fileToBase64(file);
-          return {
-            name: file.name,
-            type: file.type,
-            content: base64Content,
-          };
-        });
-
-        const processedFiles = await Promise.all(filePromises);
-        const payload_pdf = { files: processedFiles };
-
-        console.log("File Request Payload:", payload_pdf);
-
-        response = await axios.post(
-          "https://your-api-endpoint.com/api/scamDetectorFile",
-          payload_pdf,
-          { headers: { "Content-Type": "application/json" } }
-        );
+      if (!response.ok) {
+        throw new Error("Network response was not ok");
       }
 
-      // Console log the API response
-      console.log("API Response Data:", response.data);
+      const data = await response.json();
 
-      // Format and process the response
-      const formattedResponse = formatResponseData(response.data);
-      setResponse({
-        content: formattedResponse,
-        jsonResponse: response.data,
-        timestamp: new Date().toLocaleTimeString(),
-      });
+      // Stop thinking, start typing
+      setIsThinking(false);
 
-      // Show modal with response
-      setShowModal(true);
+      // Add placeholder for bot response that will be filled in character by character
+      setMessages((prev) => [
+        ...prev,
+        {
+          text: "",
+          isUser: false,
+          timestamp: new Date().toLocaleTimeString([], {
+            hour: "2-digit",
+            minute: "2-digit",
+          }),
+        },
+      ]);
+
+      setCurrentResponse(
+        data.response || "I'm sorry, I couldn't process that request."
+      );
     } catch (error) {
-      console.error("Error processing request:", error);
-
-      setResponse({
-        content: `Error occurred: ${error.message}. In a production environment, proper error handling would be implemented.`,
-        errorDetails: error,
-        timestamp: new Date().toLocaleTimeString(),
-      });
-
-      // Show modal even for errors
-      setShowModal(true);
+      console.error("Error:", error);
+      setIsThinking(false);
+      setMessages((prev) => [
+        ...prev,
+        {
+          text: "Sorry, there was an error processing your request.",
+          isUser: false,
+          timestamp: new Date().toLocaleTimeString([], {
+            hour: "2-digit",
+            minute: "2-digit",
+          }),
+        },
+      ]);
     } finally {
       setIsLoading(false);
     }
   };
 
-  // Function to format the entire response data
-  const formatResponseData = (data) => {
-    // Extract relevant information or use the raw response
-    const responseText = data.response || "No response data received";
+  // Enhanced formatting function
+  const formatText = (text) => {
+    if (!text) return "";
 
-    // Parse the response text to identify sections like Category, Summary, etc.
-    const formattedSections = parseResponseSections(responseText);
-
-    return formattedSections;
-  };
-
-  // Function to parse the response into structured sections
-  const parseResponseSections = (text) => {
-    const sections = {};
-
-    // Try to extract sections using regex patterns
-    const categoryMatch = text.match(/\*\*Category:\*\*\s*(.*?)(?=\*\*|$)/s);
-    const summaryMatch = text.match(/\*\*Summary:\*\*\s*(.*?)(?=\*\*|$)/s);
-    const analysisMatch = text.match(/\*\*Analysis:\*\*\s*(.*?)(?=\*\*|$)/s);
-    const recommendationsMatch = text.match(
-      /\*\*Recommendations:\*\*\s*(.*?)(?=\*\*|$)/s
+    // Handle bold text (**text**)
+    text = text.replace(
+      /\*\*(.*?)\*\*/g,
+      '<strong class="font-bold">$1</strong>'
     );
 
-    // Extract checkmark or cross indicators
-    let categoryIndicator = "❓";
-    if (categoryMatch && categoryMatch[1]) {
-      if (categoryMatch[1].toLowerCase().includes("legitimate")) {
-        categoryIndicator = "✅";
-      } else if (
-        categoryMatch[1].toLowerCase().includes("scam") ||
-        categoryMatch[1].toLowerCase().includes("fraud")
-      ) {
-        categoryIndicator = "❌";
-      }
-    }
+    // Handle italic text (*text*)
+    text = text.replace(/\*(.*?)\*/g, '<em class="italic">$1</em>');
 
-    // Format each section
-    if (categoryMatch && categoryMatch[1]) {
-      sections.category = {
-        indicator: categoryIndicator,
-        text: categoryMatch[1].trim(),
-      };
-    }
+    // Handle code blocks (```code```)
+    text = text.replace(
+      /```([\s\S]*?)```/g,
+      '<pre class="bg-gray-800 text-gray-200 p-3 rounded-md my-2 overflow-x-auto font-mono text-sm">$1</pre>'
+    );
 
-    if (summaryMatch && summaryMatch[1]) {
-      sections.summary = summaryMatch[1].trim();
-    }
+    // Handle inline code (`code`)
+    text = text.replace(
+      /`([^`]+)`/g,
+      '<code class="bg-gray-200 px-1 rounded font-mono text-sm">$1</code>'
+    );
 
-    if (analysisMatch && analysisMatch[1]) {
-      sections.analysis = analysisMatch[1].trim();
-    }
+    // Add spacing between paragraphs (double line breaks)
+    text = text.replace(/\n\n/g, '<div class="my-4"></div>');
 
-    if (recommendationsMatch && recommendationsMatch[1]) {
-      sections.recommendations = recommendationsMatch[1].trim();
-    }
+    // Add spacing for single line breaks
+    text = text.replace(/\n/g, '<div class="my-2"></div>');
 
-    // If we couldn't parse structured sections, use the original text
-    if (Object.keys(sections).length === 0) {
-      return { rawText: text };
-    }
-
-    return sections;
+    return text;
   };
 
-  const handleFileUpload = (e) => {
-    const uploadedFiles = Array.from(e.target.files);
-    setFiles((prev) => [...prev, ...uploadedFiles]);
-  };
+  // Generate typing indicator with random periods
+  const TypingIndicator = () => {
+    const [dots, setDots] = useState(".");
 
-  const removeFile = (fileToRemove) => {
-    setFiles(files.filter((file) => file !== fileToRemove));
-  };
+    useEffect(() => {
+      const interval = setInterval(() => {
+        setDots((prev) => (prev.length < 3 ? prev + "." : "."));
+      }, 500);
 
-  const resetChat = () => {
-    setUserPrompt("");
-    setFiles([]);
-    setResponse(null);
-    setHasSubmitted(false);
-    setShowModal(false);
-  };
-
-  const closeModal = () => {
-    setShowModal(false);
-  };
-
-  const triggerFileInput = () => {
-    fileInputRef.current.click();
+      return () => clearInterval(interval);
+    }, []);
   };
 
   return (
-    <div className="flex flex-col h-screen bg-gradient-to-br from-blue-50 to-white text-blue-900">
+    <div className="flex flex-col h-screen bg-gray-50">
       {/* Header */}
-      <header className="border-b border-blue-100 p-6">
-        <div className="max-w-3xl mx-auto flex justify-between items-center">
-          <div className="flex items-center">
-            <div className="h-10 w-10 rounded-full bg-blue-600 flex items-center justify-center mr-3">
-              <span className="text-xl font-bold text-white">AI</span>
-            </div>
-            <h1 className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-blue-800 bg-clip-text text-transparent">
-              Intelligence Assistant
-            </h1>
-          </div>
-
-          {hasSubmitted && (
-            <button
-              onClick={resetChat}
-              className="px-4 py-2 text-sm bg-blue-100 hover:bg-blue-200 text-blue-700 rounded-full transition-colors"
+      <div className="flex-none p-4 bg-gradient-to-r from-blue-600 to-blue-800 text-white shadow-md">
+        <div className="max-w-4xl mx-auto flex items-center">
+          <div className="w-8 h-8 rounded-full bg-white text-blue-600 flex items-center justify-center mr-3">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 24 24"
+              fill="currentColor"
+              className="w-5 h-5"
             >
-              New Question
-            </button>
-          )}
-        </div>
-      </header>
-
-      <div className="flex-1 overflow-hidden flex flex-col">
-        <div className="max-w-3xl w-full mx-auto flex-1 flex flex-col p-6">
-          {!hasSubmitted && (
-            <div className="flex-1 flex flex-col items-center justify-center text-center px-4 mb-10">
-              <div className="h-24 w-24 rounded-full bg-gradient-to-r from-blue-500 to-blue-600 flex items-center justify-center mb-6">
-                <span className="text-4xl text-white">✨</span>
-              </div>
-              <h2 className="text-2xl font-bold mb-3 text-blue-800">
-                How can I assist you today?
-              </h2>
-              <p className="text-blue-600 max-w-md">
-                Ask me anything or upload documents for analysis. I'll provide a
-                concise, informative response.
-              </p>
-            </div>
-          )}
-
-          {hasSubmitted && (
-            <div className="flex-1 overflow-y-auto mb-6">
-              {/* User query recap */}
-              <div className="mb-6 p-4 bg-blue-50 rounded-lg border border-blue-100">
-                <div className="text-sm text-blue-500 mb-1">Your query:</div>
-                <div className="font-medium text-blue-800">{userPrompt}</div>
-                {files.length > 0 && (
-                  <div className="mt-3 flex flex-wrap gap-2">
-                    {files.map((file, index) => (
-                      <div
-                        key={index}
-                        className="inline-flex items-center bg-blue-100 rounded-md px-2 py-1"
-                      >
-                        <span className="text-xs text-blue-700">
-                          {file.name}
-                        </span>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </div>
-
-              {/* Loading state */}
-              {isLoading && (
-                <div className="flex flex-col items-center justify-center h-40">
-                  <Loader2 className="h-10 w-10 text-blue-500 animate-spin mb-4" />
-                  <p className="text-blue-600">Processing request...</p>
-                  <p className="text-xs text-blue-400 mt-2">
-                    Check console for request and response logs
-                  </p>
-                </div>
-              )}
-            </div>
-          )}
-
-          {/* Input area - shown only if not submitted or if reset */}
-          {!hasSubmitted && (
-            <div className="bg-white rounded-xl p-4 border border-blue-100 shadow-lg">
-              {/* File preview area */}
-              {files.length > 0 && (
-                <div className="mb-4 flex flex-wrap gap-2">
-                  {files.map((file, index) => (
-                    <div
-                      key={index}
-                      className="flex items-center bg-blue-50 rounded-md px-3 py-2 group"
-                    >
-                      <span className="text-sm text-blue-700 mr-2">
-                        {file.name}
-                      </span>
-                      <button
-                        onClick={() => removeFile(file)}
-                        className="text-blue-400 hover:text-red-500 transition-colors"
-                      >
-                        <Trash size={16} />
-                      </button>
-                    </div>
-                  ))}
-                </div>
-              )}
-
-              {/* Input form */}
-              <form onSubmit={handleSubmit} className="flex items-end gap-3">
-                <div className="flex-1 relative">
-                  <textarea
-                    className="w-full bg-blue-50 border border-blue-100 rounded-lg py-4 pl-4 pr-12 resize-none focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-blue-800 placeholder-blue-400 min-h-[100px]"
-                    placeholder="Ask anything..."
-                    rows={3}
-                    value={userPrompt}
-                    onChange={(e) => setUserPrompt(e.target.value)}
-                  />
-                  <button
-                    type="button"
-                    className="absolute right-3 bottom-3 text-blue-400 hover:text-blue-600 transition-colors"
-                    onClick={triggerFileInput}
-                  >
-                    <Paperclip size={20} />
-                  </button>
-                  <input
-                    type="file"
-                    ref={fileInputRef}
-                    onChange={handleFileUpload}
-                    multiple
-                    className="hidden"
-                  />
-                </div>
-                <button
-                  type="submit"
-                  className="bg-gradient-to-r from-blue-500 to-blue-700 text-white rounded-lg p-4 hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 disabled:opacity-50 transition-all"
-                  disabled={userPrompt.trim() === "" && files.length === 0}
-                >
-                  <Send size={20} />
-                </button>
-              </form>
-            </div>
-          )}
+              <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-1-13h2v6h-2zm0 8h2v2h-2z" />
+            </svg>
+          </div>
+          <h1 className="text-xl font-bold">AI Assistant</h1>
         </div>
       </div>
 
-      {/* Modal Popup for Response */}
-      {showModal && response && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-          <div className="bg-white rounded-xl shadow-2xl w-full max-w-3xl max-h-[90vh] overflow-hidden flex flex-col animate-fadeIn">
-            {/* Modal Header */}
-            <div className="flex items-center justify-between p-4 border-b border-blue-100 bg-gradient-to-r from-blue-50 to-white">
-              <div className="flex items-center">
-                <div className="h-8 w-8 rounded-full bg-blue-600 flex items-center justify-center mr-3">
-                  <span className="text-sm font-bold text-white">AI</span>
+      {/* Chat Container */}
+      <div className="flex-grow overflow-hidden">
+        <div
+          ref={chatContainerRef}
+          className="h-full overflow-y-auto p-4 md:p-6"
+        >
+          <div className="max-w-4xl mx-auto">
+            {/* Welcome message */}
+            {messages.length === 0 && (
+              <div className="flex flex-col items-center justify-center h-full text-center p-6">
+                <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mb-4">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                    className="w-8 h-8 text-blue-600"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"
+                    />
+                  </svg>
                 </div>
-                <div>
-                  <h3 className="font-bold text-blue-800">
-                    Assistant Response
-                  </h3>
-                  <div className="text-xs text-blue-500">
-                    {response.timestamp}
+                <h2 className="text-xl font-semibold text-gray-800 mb-2">
+                  How can I help you today?
+                </h2>
+                <p className="text-gray-500 max-w-md mb-6">
+                  Ask me anything about fraud prevention, financial security, or
+                  suspicious activities.
+                </p>
+              </div>
+            )}
+
+            {/* Message bubbles */}
+            {messages.map((message, index) => (
+              <div
+                key={index}
+                className={`flex mb-4 ${
+                  message.isUser ? "justify-end" : "justify-start"
+                }`}
+              >
+                <div
+                  className={`flex ${
+                    message.isUser ? "flex-row-reverse" : "flex-row"
+                  } max-w-[80%] items-end`}
+                >
+                  {/* Avatar */}
+                  <div
+                    className={`flex-shrink-0 ${
+                      message.isUser ? "ml-2" : "mr-2"
+                    } mb-1`}
+                  >
+                    <div
+                      className={`w-8 h-8 rounded-full flex items-center justify-center ${
+                        message.isUser
+                          ? "bg-blue-600 text-white"
+                          : "bg-blue-100 text-blue-600"
+                      }`}
+                    >
+                      {message.isUser ? "U" : "AI"}
+                    </div>
+                  </div>
+
+                  {/* Message content */}
+                  <div className="flex flex-col">
+                    <div
+                      className={`p-3 rounded-2xl shadow-sm ${
+                        message.isUser
+                          ? "bg-blue-600 text-white rounded-br-none"
+                          : "bg-white border border-gray-200 text-gray-800 rounded-bl-none"
+                      }`}
+                    >
+                      {message.isUser ? (
+                        <div className="whitespace-pre-wrap">
+                          {message.text}
+                        </div>
+                      ) : index === messages.length - 1 && currentResponse ? (
+                        <div
+                          className="whitespace-pre-wrap"
+                          dangerouslySetInnerHTML={{
+                            __html: formatText(displayedText),
+                          }}
+                        />
+                      ) : (
+                        <div
+                          className="whitespace-pre-wrap"
+                          dangerouslySetInnerHTML={{
+                            __html: formatText(message.text),
+                          }}
+                        />
+                      )}
+                    </div>
+
+                    {/* Timestamp */}
+                    <div
+                      className={`text-xs text-gray-500 mt-1 ${
+                        message.isUser ? "text-right" : "text-left"
+                      }`}
+                    >
+                      {message.timestamp}
+                    </div>
                   </div>
                 </div>
               </div>
-              <button
-                onClick={closeModal}
-                className="h-8 w-8 rounded-full bg-blue-100 hover:bg-blue-200 flex items-center justify-center text-blue-600 transition-colors"
-              >
-                <X size={18} />
-              </button>
-            </div>
+            ))}
 
-            {/* Modal Body */}
-            <div className="flex-1 overflow-y-auto p-6">
-              <div className="prose max-w-none text-blue-800">
-                {response.content.rawText ? (
-                  <p className="whitespace-pre-line">
-                    {response.content.rawText}
-                  </p>
-                ) : (
-                  <div className="space-y-4">
-                    {/* Category Section */}
-                    {response.content.category && (
-                      <div className="flex items-start">
-                        <div className="font-semibold text-blue-800 min-w-[100px]">
-                          Category:
-                        </div>
-                        <div className="flex items-center">
-                          <span className="mr-2">
-                            {response.content.category.indicator}
-                          </span>
-                          <span
-                            className={`font-medium ${
-                              response.content.category.indicator === "✅"
-                                ? "text-green-600"
-                                : response.content.category.indicator === "❌"
-                                ? "text-red-600"
-                                : "text-blue-700"
-                            }`}
-                          >
-                            {response.content.category.text}
-                          </span>
-                        </div>
-                      </div>
-                    )}
-
-                    {/* Summary Section */}
-                    {response.content.summary && (
-                      <div className="space-y-2">
-                        <div className="font-semibold text-blue-800">
-                          Summary:
-                        </div>
-                        <div className="pl-4">{response.content.summary}</div>
-                      </div>
-                    )}
-
-                    {/* Analysis Section */}
-                    {response.content.analysis && (
-                      <div className="space-y-2">
-                        <div className="font-semibold text-blue-800">
-                          Analysis:
-                        </div>
-                        <div className="pl-4 whitespace-pre-line">
-                          {response.content.analysis}
-                        </div>
-                      </div>
-                    )}
-
-                    {/* Recommendations Section */}
-                    {response.content.recommendations && (
-                      <div className="space-y-2">
-                        <div className="font-semibold text-blue-800">
-                          Recommendations:
-                        </div>
-                        <div className="pl-4">
-                          {response.content.recommendations
-                            .split("-")
-                            .filter((item) => item.trim())
-                            .map((item, index) => (
-                              <div
-                                key={index}
-                                className="flex items-start mb-2"
-                              >
-                                <span className="mr-2">•</span>
-                                <span>{item.trim()}</span>
-                              </div>
-                            ))}
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                )}
+            {/* Typing indicator */}
+            {(isLoading || currentResponse) && (
+              <div className="flex items-start mb-4">
+                <TypingIndicator />
               </div>
-            </div>
+            )}
 
-            {/* Modal Footer */}
-            <div className="border-t border-blue-100 p-4 bg-blue-50 flex justify-end">
-              <button
-                onClick={closeModal}
-                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-              >
-                Close
-              </button>
-            </div>
+            {/* Bottom space for better UX */}
+            <div className="h-4"></div>
           </div>
         </div>
-      )}
+      </div>
 
-      {/* CSS for animation */}
-      <style jsx>{`
-        @keyframes fadeIn {
-          from {
-            opacity: 0;
-            transform: translateY(-10px);
-          }
-          to {
-            opacity: 1;
-            transform: translateY(0);
-          }
-        }
-        .animate-fadeIn {
-          animation: fadeIn 0.3s ease-out forwards;
-        }
-      `}</style>
+      {/* Input area */}
+      <form
+        onSubmit={handleSubmit}
+        className="flex-none p-4 border-t border-gray-200 bg-white shadow-lg"
+      >
+        <div className="max-w-4xl mx-auto">
+          <div className="flex rounded-full border border-gray-300 overflow-hidden bg-white shadow-sm focus-within:ring-2 focus-within:ring-blue-500 focus-within:border-blue-500">
+            <input
+              ref={inputRef}
+              type="text"
+              value={input}
+              onChange={(e) => setInput(e.target.value)}
+              placeholder="Type your message..."
+              className="flex-grow p-3 focus:outline-none px-4"
+              disabled={isLoading}
+            />
+            <button
+              type="submit"
+              className="bg-blue-600 text-white px-5 py-3 flex items-center justify-center disabled:bg-blue-400 transition-colors"
+              disabled={isLoading || !input.trim()}
+            >
+              {isLoading ? (
+                <svg
+                  className="animate-spin h-5 w-5"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                >
+                  <circle
+                    className="opacity-25"
+                    cx="12"
+                    cy="12"
+                    r="10"
+                    stroke="currentColor"
+                    strokeWidth="4"
+                  ></circle>
+                  <path
+                    className="opacity-75"
+                    fill="currentColor"
+                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                  ></path>
+                </svg>
+              ) : (
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-5 w-5"
+                  viewBox="0 0 20 20"
+                  fill="currentColor"
+                >
+                  <path
+                    fillRule="evenodd"
+                    d="M10.293 5.293a1 1 0 011.414 0l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414-1.414L12.586 11H5a1 1 0 110-2h7.586l-2.293-2.293a1 1 0 010-1.414z"
+                    clipRule="evenodd"
+                  />
+                </svg>
+              )}
+            </button>
+          </div>
+         
+        </div>
+      </form>
     </div>
   );
-}
+};
+
+export default ChatBot;
