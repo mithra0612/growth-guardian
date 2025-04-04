@@ -338,8 +338,7 @@ export default function AssetPredictionTool() {
               <div className="bg-white rounded-xl shadow-lg p-6 lg:p-8 border-l-4 border-green-500 transition duration-300 hover:translate-y-1 hover:shadow-xl">
                 <h2 className="text-2xl font-semibold text-blue-900 mb-6 pb-2 border-b-2 border-green-500 inline-block">Smart Investment Tips</h2>
                 
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                  {tips.map((tip, index) => (
+                <div className="grid grid-cols-1 gap-6">                  {tips.map((tip, index) => (
                     <div key={index} className="bg-gradient-to-br from-green-50 to-blue-50 p-4 rounded-lg border border-gray-200">
                       <h3 className="text-lg font-semibold text-blue-800 mb-2 flex items-center">
                         <svg className="w-5 h-5 mr-2 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -352,20 +351,7 @@ export default function AssetPredictionTool() {
                   ))}
                 </div>
                 
-                <div className="mt-6 bg-yellow-50 border-l-4 border-yellow-400 p-4 rounded">
-                  <div className="flex">
-                    <div className="flex-shrink-0">
-                      <svg className="h-5 w-5 text-yellow-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-                        <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
-                      </svg>
-                    </div>
-                    <div className="ml-3">
-                      <p className="text-sm text-yellow-700">
-                        <strong>Disclaimer:</strong> These tips are generated based on your inputs and are for informational purposes only. They do not constitute financial advice. Consult a qualified financial advisor before making investment decisions.
-                      </p>
-                    </div>
-                  </div>
-                </div>
+                
               </div>
             </section>
           )}
