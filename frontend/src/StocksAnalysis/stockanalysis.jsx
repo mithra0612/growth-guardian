@@ -128,7 +128,33 @@ const StockTradingInterface = ({ handleChartsStock }) => {
     setShowModal(false);
     setShowConfirmation(true);
     setOrderConfirmed(true);
-
+    
+    // Send order data to teleBot API
+    fetch('https://hackit-fin-tech-backend.vercel.app/api/teleBot', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        symbol: selectedItem.symbol,
+        name: selectedItem.name,
+        type: selectedType === "stocks" ? "Stock" : "Mutual Fund",
+        price: selectedType === "stocks" ? selectedItem.price : parseFloat(price),
+        quantity: quantity,
+        alert : "The stock is getting a drastic change",
+        totalValue: parseFloat(totalValue),
+        timestamp: new Date().toISOString()
+      })
+    })
+    .then(response => {
+      if (!response.ok) {
+        console.error('Failed to send order to teleBot');
+      }
+      return response.json();
+    })
+    .then(data => console.log('TeleBot notification sent:', data))
+    .catch(error => console.error('Error sending to teleBot:', error));
+    
     // Auto-close confirmation message after 2 seconds
     setTimeout(() => {
       setShowConfirmation(false);
