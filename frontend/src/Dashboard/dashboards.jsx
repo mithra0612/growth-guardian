@@ -36,10 +36,10 @@ const FinancialDashboard = () => {
       goal: 415000, // 5000 * 83 (was 20000 * 83)
     },
     familyMembers: [
-      { name: "Alex Johnson", savings: 166000, savingsGoal: 4150 }, // 2000, 5000 * 83
-      { name: "Taylor Johnson", savings: 124500, savingsGoal: 3320 }, // 1500, 4000 * 83
-      { name: "Riley Johnson", savings: 83000, savingsGoal: 2075 }, // 1000, 2500 * 83
-      { name: "Jordan Johnson", savings: 62250, savingsGoal: 1660 }, // 750, 2000 * 83
+      { name: "Alex Johnson", savings: 1660, savingsGoal: 4150 }, // 2000, 5000 * 83
+      { name: "Taylor Johnson", savings: 1245, savingsGoal: 3320 }, // 1500, 4000 * 83
+      { name: "Riley Johnson", savings: 830, savingsGoal: 2075 }, // 1000, 2500 * 83
+      { name: "Jordan Johnson", savings: 622, savingsGoal: 1660 }, // 750, 2000 * 83
     ],
 modules: [
   { name: "Budgeting", progress: 50 },
