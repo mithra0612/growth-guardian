@@ -2,3 +2,22 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Hide scrollbar and make it transparent */
+.no-scrollbar {
+    -ms-overflow-style: none; /* IE and Edge */
+    scrollbar-width: thin; /* Firefox: Use 'thin' instead of 'none' to allow customization */
+    scrollbar-color: transparent transparent; /* Firefox: Set scrollbar color to transparent */
+  }
+  
+  .no-scrollbar::-webkit-scrollbar {
+    width: 6px; /* Set a small width for Webkit browsers (Chrome, Safari) */
+    background: transparent; /* Transparent background */
+  }
+  
+  .no-scrollbar::-webkit-scrollbar-thumb {
+    background: transparent; /* Transparent thumb */
+  }
+  
+  .no-scrollbar::-webkit-scrollbar-track {
+    background: transparent; /* Transparent track */
+  }

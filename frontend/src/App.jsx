@@ -11,20 +11,22 @@ import BudgetPlanner from "./CalculationTools/BudgetPlanner";
 import Scamprevent from "./ScamPreventionBot/scamprevention";
 import Scamarticle from "./ScamPreventionBot/scampreventionarticle";
 import Retirement from "./CalculationTools/RetirementPlanner";
-import Stock from './StocksAnalysis/stockanalysis';
+import Stock from "./StocksAnalysis/stockanalysis";
 import StockingBot from "./StockBot/stockbot";
 import Learning from "./LearningModules/LearningModulesNew";
 import Stockchart from "./StocksAnalysis/stockchart";
-import AssetReturnForecast from './AssetForecast/AssetReturnForecast';
+import AssetReturnForecast from "./AssetForecast/AssetReturnForecast";
 import FloatingChatbot from "./FloatingChatbot/Floating";
-
-import { 
-  Home, 
-  Calculator, 
-  DollarSign, 
-  Shield, 
-  BarChart2, 
-  Bot, 
+import Landing from "./LandingPage/LandingPage";
+import Login from "./LoginPage/LoginPage";
+import DashBoard from "./Dashboard/dashboards";
+import {
+  Home,
+  Calculator,
+  DollarSign,
+  Shield,
+  BarChart2,
+  Bot,
   ChevronDown,
   Menu,
   X,
@@ -39,86 +41,101 @@ import {
   ChevronRight,
   LogOut,
   ChartArea,
-  Book
+  Book,
 } from "lucide-react";
 
 const App = () => {
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [isMobile, setIsMobile] = useState(false);
 
-  // Handle screen size changes
   useEffect(() => {
     const handleResize = () => {
       setIsMobile(window.innerWidth < 1024);
       if (window.innerWidth < 1024) setSidebarOpen(false);
     };
 
-    handleResize(); // Initialize
+    handleResize();
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
   return (
     <Router>
-      <div className="flex h-screen">
-        {/* Solid Blue Sidebar */}
-        <aside 
-          className={`${
-            sidebarOpen ? 'w-64' : 'w-20'
-          } fixed h-full z-20 transition-all duration-300 ease-in-out bg-blue-900 shadow-lg`}
-        >
-          <SidebarContent sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />
-        </aside>
-        
-        {/* Overlay for mobile */}
-        {isMobile && sidebarOpen && (
-          <div 
-            className="fixed inset-0 bg-black/30 z-10 lg:hidden"
-            onClick={() => setSidebarOpen(false)}
-          />
-        )}
+      <Routes>
+        {/* Routes without sidebar */}
+        <Route path="/" element={<Landing />} />
+        <Route path="/login" element={<Login />} />
 
-        {/* Main Content Area */}
-        <main className={`flex-1 transition-all duration-300 ${sidebarOpen ? 'ml-64' : 'ml-20'}`}>
-          <Routes>
-            {/* Tool routes */}
-            <Route path="/budgetplanner" element={<BudgetPlanner />} />
-            <Route path="/learning-modules" element={<Learning />} />
-            <Route path="/invvsdebt" element={<Investment />} />
-            <Route path="/retirementplanner" element={<Retirement />} />
+        {/* Routes with sidebar */}
+        <Route
+          path="/*"
+          element={
+            <div className="flex h-screen">
+              {/* Sidebar */}
+              <aside
+                className={`${
+                  sidebarOpen ? "w-64" : "w-20"
+                } fixed h-full z-20 transition-all duration-300 ease-in-out bg-blue-900 shadow-lg`}
+              >
+                <SidebarContent
+                  sidebarOpen={sidebarOpen}
+                  setSidebarOpen={setSidebarOpen}
+                />
+              </aside>
 
-            {/* Scam Prevention routes */}
-            <Route path="/scamprevention" element={<Scamprevent />} />
-            <Route path="/scamarticle" element={<Scamarticle />} />
+              {/* Overlay for mobile */}
+              {isMobile && sidebarOpen && (
+                <div
+                  className="fixed inset-0 bg-black/30 z-10 lg:hidden"
+                  onClick={() => setSidebarOpen(false)}
+                />
+              )}
 
-            {/* Default route */}
-            <Route path="/" element={<BudgetPlanner />} />
-            <Route path="/stockingbots" element={<StockingBot />} />
-
-            {/* Other routes */}
-            <Route path="/stocks" element={<Stock/>} />
-            <Route path="/stockschart" element={<Stockchart/>} />
-            <Route path="/forecast" element={<AssetReturnForecast/>   } />
-          </Routes>
-          <FloatingChatbot /> {/* Floating Chatbot Component */}
-        </main>
-      </div>
+              {/* Main Content Area */}
+              <main
+                className={`flex-1 transition-all duration-300 ${
+                  sidebarOpen ? "ml-64" : "ml-20"
+                }`}
+              >
+                <Routes>
+                  <Route path="/dashboard" element={<DashBoard />} />
+                  <Route path="/budgetplanner" element={<BudgetPlanner />} />
+                  <Route path="/learning-modules" element={<Learning />} />
+                  <Route path="/invvsdebt" element={<Investment />} />
+                  <Route path="/retirementplanner" element={<Retirement />} />
+                  <Route path="/scamprevention" element={<Scamprevent />} />
+                  <Route path="/scamarticle" element={<Scamarticle />} />
+                  <Route path="/stockingbots" element={<StockingBot />} />
+                  <Route path="/stocks" element={<Stock />} />
+                  <Route path="/stockschart" element={<Stockchart />} />
+                  <Route path="/forecast" element={<AssetReturnForecast />} />
+                </Routes>
+                <FloatingChatbot />
+              </main>
+            </div>
+          }
+        />
+      </Routes>
     </Router>
   );
 };
 
-// Sidebar Content Component
 const SidebarContent = ({ sidebarOpen, setSidebarOpen }) => {
   return (
     <div className="flex flex-col h-full text-white">
-      {/* Logo area */}
-      <div className={`flex items-center h-16 ${sidebarOpen ? 'px-6 justify-between' : 'justify-center'}`}>
+      <div
+        className={`flex items-center h-16 ${
+          sidebarOpen ? "px-6 justify-between" : "justify-center"
+        }`}
+      >
         {sidebarOpen ? (
           <>
             <div className="flex items-center">
-              <h1 className="ml-3 text-lg font-semibold text-white">GrowthGuardian</h1>
+              <h1 className="ml-3 text-lg font-semibold text-white">
+                GrowthGuardian
+              </h1>
             </div>
-            <button 
+            <button
               onClick={() => setSidebarOpen(!sidebarOpen)}
               className="p-1.5 rounded-md hover:bg-blue-800 text-white"
             >
@@ -126,31 +143,27 @@ const SidebarContent = ({ sidebarOpen, setSidebarOpen }) => {
             </button>
           </>
         ) : (
-          <>
-            <button 
-              onClick={() => setSidebarOpen(!sidebarOpen)}
-              className="p-1.5 rounded-md hover:bg-blue-800 text-white"
-            >
-              <Menu size={18} />
-            </button>
-          </>
+          <button
+            onClick={() => setSidebarOpen(!sidebarOpen)}
+            className="p-1.5 rounded-md hover:bg-blue-800 text-white"
+          >
+            <Menu size={18} />
+          </button>
         )}
       </div>
 
-      {/* Navigation with sections */}
-      <div className="flex-1 overflow-y-auto py-4 px-3">
+      <div className="flex-1 overflow-y-auto py-4 px-3 scrollbar-hide">
         <NavMenu sidebarOpen={sidebarOpen} />
       </div>
 
-      {/* User profile section */}
       {sidebarOpen && (
         <div className="p-3 mt-2 border-t border-blue-700">
           <div className="flex items-center">
             <div className="h-8 w-8 rounded-full bg-white text-blue-900 flex items-center justify-center">
-              <span className="font-medium">JD</span>
+              <span className="font-medium">AJ</span>
             </div>
             <div className="ml-3">
-              <p className="text-sm font-medium text-white">John Doe</p>
+              <p className="text-sm font-medium text-white">Alex Johnson</p>
             </div>
             <button className="ml-auto p-1.5 rounded-md hover:bg-blue-800 text-white">
               <LogOut size={16} />
@@ -162,87 +175,82 @@ const SidebarContent = ({ sidebarOpen, setSidebarOpen }) => {
   );
 };
 
-// Navigation menu with all items and sections
 const NavMenu = ({ sidebarOpen }) => {
   return (
-    <div className="space-y-8"> {/* Reduced spacing between sections from 10 to 8 */}
-      {/* Main navigation */}
-      <NavSection 
-        title="Main" 
+    <div className="space-y-8">
+      <NavSection
+        title="Main"
         sidebarOpen={sidebarOpen}
         items={[
-          { 
-            to: "/learning-modules", 
-            icon: <Book size={18} />, 
-            label: "Learning Modules" 
-          }
+          {
+            to: "/dashboard",
+            icon: <Home size={18} />,
+            label: "Dashboard",
+          },
+          {
+            to: "/learning-modules",
+            icon: <Book size={18} />,
+            label: "Learning Modules",
+          },
         ]}
       />
-      <NavSection 
-          title="Investments" 
-          sidebarOpen={sidebarOpen}
-          items={[
-            { 
-              to: "/stocks", 
-              icon: <BarChart2 size={18} />, 
-              label: "Investment Simulator" 
-            },
-            { 
-              to: "/forecast", 
-              icon: <ChartArea size={18} />, 
-              label: "Asset Return Forecast" 
-            }
-          ]}
-        />
-
-      {/* Finance tools */}
-      <NavSection 
-        title="Finance Tools" 
+      <NavSection
+        title="Investments"
         sidebarOpen={sidebarOpen}
         items={[
-          { 
-            to: "/budgetplanner", 
-            icon: <Wallet size={18} />, 
-            label: "Budget Planner" 
+          {
+            to: "/stocks",
+            icon: <BarChart2 size={18} />,
+            label: "Investment Simulator",
           },
-          { 
-            to: "/invvsdebt", 
-            icon: <DollarSign size={18} />, 
-            label: "Invest vs Debt" 
+          {
+            to: "/forecast",
+            icon: <ChartArea size={18} />,
+            label: "Asset Return Forecast",
           },
-          { 
-            to: "/retirementplanner", 
-            icon: <Target size={18} />, 
-            label: "Retirement Planning" 
-          }
         ]}
       />
-
-      {/* Security */}
-      <NavSection 
-        title="Security" 
+      <NavSection
+        title="Finance Tools"
         sidebarOpen={sidebarOpen}
         items={[
-          { 
-            to: "/scamprevention", 
-            icon: <Shield size={18} />, 
-            label: "Scam Prevention Bot" 
+          {
+            to: "/budgetplanner",
+            icon: <Wallet size={18} />,
+            label: "Budget Planner",
           },
-          { 
-            to: "/scamarticle", 
-            icon: <FileText size={18} />, 
-            label: "Prevention Guide" 
-          }
+          {
+            to: "/invvsdebt",
+            icon: <DollarSign size={18} />,
+            label: "Invest vs Debt",
+          },
+          {
+            to: "/retirementplanner",
+            icon: <Target size={18} />,
+            label: "Retirement Planning",
+          },
         ]}
       />
-        
-
-      {/* Investments */}
+      <NavSection
+        title="Security"
+        sidebarOpen={sidebarOpen}
+        items={[
+          {
+            to: "/scamprevention",
+            icon: <Shield size={18} />,
+            label: "Scam Prevention Bot",
+          },
+          {
+            to: "/scamarticle",
+            icon: <FileText size={18} />,
+            label: "Prevention Guide",
+          },
+        ]}
+      />
     </div>
   );
 };
 
-// Navigation section component
 const NavSection = ({ title, items, sidebarOpen }) => {
   return (
     <div>
@@ -266,7 +274,6 @@ const NavSection = ({ title, items, sidebarOpen }) => {
   );
 };
 
-// Individual navigation item
 const NavItem = ({ to, icon, label, sidebarOpen }) => {
   const location = useLocation();
   const isActive = location.pathname === to;
@@ -276,24 +283,23 @@ const NavItem = ({ to, icon, label, sidebarOpen }) => {
       <Link
         to={to}
         className={`group flex items-center ${
-          sidebarOpen ? 'px-3' : 'justify-center'
+          sidebarOpen ? "px-3" : "justify-center"
         } py-2 rounded-md transition-all ${
-          isActive 
-            ? 'bg-white/20 text-white font-medium' 
-            : 'text-blue-100 hover:bg-blue-800 hover:text-white'
+          isActive
+            ? "bg-white/20 text-white font-medium"
+            : "text-blue-100 hover:bg-blue-800 hover:text-white"
         }`}
       >
-        <div className={`flex items-center justify-center ${
-          isActive ? 'text-white' : 'text-blue-100 group-hover:text-white'
-        }`}>
+        <div
+          className={`flex items-center justify-center ${
+            isActive ? "text-white" : "text-blue-100 group-hover:text-white"
+          }`}
+        >
           {icon}
         </div>
-        
-        {sidebarOpen && (
-          <span className="ml-3 text-sm">{label}</span>
-        )}
-        
-        {/* Tooltip for collapsed state */}
+
+        {sidebarOpen && <span className="ml-3 text-sm">{label}</span>}
+
         {!sidebarOpen && (
           <div className="absolute left-16 ml-1 p-2 min-w-max rounded-md shadow-md bg-gray-800 text-xs font-medium text-white opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity">
             {label}
@@ -304,15 +310,17 @@ const NavItem = ({ to, icon, label, sidebarOpen }) => {
   );
 };
 
+// Add global CSS for hiding scrollbars
+const style = document.createElement('style');
+style.textContent = `
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+  .scrollbar-hide {
+    -ms-overflow-style: none;  /* IE and Edge */
+    scrollbar-width: none;     /* Firefox */
+  }
+`;
+document.head.appendChild(style);
+
 export default App;
-
-// import React from 'react'
-// function App() {
-//   return (
-//     <div>
-//       <AssetReturnForecast/>
-//     </div>
-//   )
-// }
-// export default App;
-

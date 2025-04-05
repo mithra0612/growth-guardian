@@ -184,7 +184,7 @@ const ChatBot = () => {
   };
 
   return (
-    <div className="flex flex-col h-screen bg-gray-50">
+    <div className="flex flex-col h-screen bg-gradient-to-br from-blue-50 to-indigo-50">
       {/* Header */}
       <div className="flex-none p-4 bg-gradient-to-r from-blue-600 to-blue-800 text-white shadow-md">
         <div className="max-w-4xl mx-auto flex items-center">
@@ -198,7 +198,7 @@ const ChatBot = () => {
               <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-1-13h2v6h-2zm0 8h2v2h-2z" />
             </svg>
           </div>
-          <h1 className="text-xl font-bold">AI Assistant</h1>
+          <h1 className="text-xl font-bold">Scam Prevention Bot</h1>
         </div>
       </div>
 
