@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 
-const API_URL = "http://127.0.0.1:8000";
+const API_URL = "https://fb67-2409-40f4-27-1d89-c149-9503-cfaf-bf9.ngrok-free.app";
 const FUND_ANALYZER_API = "https://hackit-fin-tech-backend.vercel.app/api/fundAnalyzer";
 
 export default function AssetPredictionTool() {
@@ -9,7 +9,7 @@ export default function AssetPredictionTool() {
   const [assetName, setAssetName] = useState('');
   const [interestRate, setInterestRate] = useState('');
   const [inflationRate, setInflationRate] = useState('');
-  const [forecastYears, setForecastYears] = useState('2'); // Default to 2 to match your example
+  const [forecastYears, setForecastYears] = useState('2'); 
   const [prediction, setPrediction] = useState(null);
   const [fundAnalysis, setFundAnalysis] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
