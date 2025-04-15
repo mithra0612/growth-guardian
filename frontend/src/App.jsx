@@ -65,7 +65,7 @@ const App = () => {
       <Routes>
         {/* Main layout with sidebar for all routes */}
         <Route
-          path="/"
+          path="/*"
           element={
             <div className="flex h-screen">
               {/* Sidebar */}
