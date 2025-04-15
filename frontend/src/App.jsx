@@ -5,6 +5,7 @@ import {
   Route,
   Link,
   useLocation,
+  Navigate,
 } from "react-router-dom";
 import Investment from "./CalculationTools/InvestmentVsDebtRepayment";
 import BudgetPlanner from "./CalculationTools/BudgetPlanner";
@@ -62,13 +63,9 @@ const App = () => {
   return (
     <Router>
       <Routes>
-        {/* Routes without sidebar */}
-        <Route path="/" element={<Landing />} />
-        <Route path="/login" element={<Login />} />
-
-        {/* Routes with sidebar */}
+        {/* Main layout with sidebar for all routes */}
         <Route
-          path="/*"
+          path="/"
           element={
             <div className="flex h-screen">
               {/* Sidebar */}
@@ -98,7 +95,8 @@ const App = () => {
                 }`}
               >
                 <Routes>
-                  <Route path="/dashboard" element={<DashBoard />} />
+                  <Route index element={<DashBoard />} />
+                  <Route path="/" element={<DashBoard />} />
                   <Route path="/budgetplanner" element={<BudgetPlanner />} />
                   <Route path="/learning-modules" element={<Learning />} />
                   <Route path="/invvsdebt" element={<Investment />} />
@@ -109,6 +107,7 @@ const App = () => {
                   <Route path="/stocks" element={<Stock />} />
                   <Route path="/stockschart" element={<Stockchart />} />
                   <Route path="/forecast" element={<AssetReturnForecast />} />
+                  <Route path="*" element={<Navigate to="/" replace />} />
                 </Routes>
                 <FloatingChatbot />
               </main>
@@ -183,7 +182,7 @@ const NavMenu = ({ sidebarOpen }) => {
         sidebarOpen={sidebarOpen}
         items={[
           {
-            to: "/dashboard",
+            to: "/",
             icon: <Home size={18} />,
             label: "Dashboard",
           },
