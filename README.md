@@ -90,8 +90,4 @@
 
 ---
 
-## **Author**
-
-- **Madhumithra**
-- [GitHub Repository](https://github.com/mithra0612/growth-guardian)
 
