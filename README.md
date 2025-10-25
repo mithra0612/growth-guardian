@@ -89,24 +89,8 @@
 - [Visit Growth Guardian](https://growth-guardian.vercel.app)
 
 ---
-## How to Run the Frontend Locally
 
-Follow these steps to clone and run the **frontend** of Growth Guardian on your local machine:
+## **Author**
 
-### **1. Clone the Repository**
-```
-git clone https://github.com/mithra0612/growth-guardian.git
-cd growth-guardian/frontend
-```
-### **2. Install Dependencies**
-```
-npm install
-```
-### **3. Start the Development Server**
-```
-npm run dev
-```
-This starts the development server. By default, the app will be available at:
-```
-http://localhost:5173
-```
+- **Madhumithra**
+- [GitHub Repository](https://github.com/mithra0612/growth-guardian/)
