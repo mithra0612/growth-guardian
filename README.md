@@ -3,6 +3,13 @@
 **Growth Guardian** is a comprehensive, AI-driven platform designed to enhance **financial literacy** and **prevent scams**. It offers users educational resources, financial planning tools, investment simulations, and real-time scam detection assistance, creating a safer and smarter financial journey for individuals and families.
 
 ---
+## My Repository Contributions
+
+The following graph represents my contribution activity to this collaborative repository.
+
+<img width="536" height="264" alt="image" src="https://github.com/user-attachments/assets/1c2dc3f1-b086-4079-96ca-58a85cdb4bfc" />
+
+---
 
 ## **Key Features**:
 
